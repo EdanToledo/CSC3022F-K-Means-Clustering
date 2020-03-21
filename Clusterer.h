@@ -18,11 +18,11 @@ namespace TLDEDA001
          std::vector<unsigned char **> images;
 
          //list of clusters
-         std::vector<TLDEDA001::Cluster> clusters;
+         std::vector<TLDEDA001::Cluster *> clusters;
 
         //number of clusters to use
         int numOfClusters;
-        
+
         public:
 
         //Constructor
@@ -42,10 +42,10 @@ namespace TLDEDA001
         std::vector<unsigned char **> getAllImages() const;
 
         //returns all clusters in a vector
-         std::vector<Cluster> getAllClusters()const;
+         std::vector<Cluster *> getAllClusters()const;
 
         //get specific cluster
-         Cluster getCluster(const int index)const;
+         Cluster* getCluster(const int index)const;
 
         //separates images into their respective clusters
          void ClusterImages();

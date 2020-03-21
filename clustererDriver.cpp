@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 TLDEDA001::Clusterer clustererobj;
 clustererobj.readImages(dataset);
 clustererobj.ClusterImages();
-cout<<clustererobj;
+//cout<<clustererobj;
     
     
     return 0;

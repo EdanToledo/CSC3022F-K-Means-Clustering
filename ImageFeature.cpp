@@ -24,6 +24,9 @@ TLDEDA001::ImageFeature::ImageFeature()
     this->mean = 0;
 }
 
+
+    
+
 //Destructor
 TLDEDA001::ImageFeature::~ImageFeature()
 {

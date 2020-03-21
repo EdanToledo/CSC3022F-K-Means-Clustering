@@ -18,7 +18,7 @@ class Cluster
     float mean;
 
     //List of imagefeatures in this cluster
-    std::vector<ImageFeature> imageFeatures;
+    std::vector<ImageFeature *> imageFeatures;
 
 public:
     //Default Constructor
@@ -40,13 +40,13 @@ public:
     void addImage(ImageFeature Image);
 
     //Get an image for this cluster
-    ImageFeature getImage(int index) const;
+    ImageFeature *getImage(int index) const;
 
     //Get the mean of this cluster
     float getMean() const;
 
     //Get all images from this cluster
-     std::vector<ImageFeature> getAllClusterImages() const;
+     std::vector<ImageFeature *> getAllClusterImages() const;
 
     //calculate new mean based on image features inside this cluster
      void calculateNewMean();
