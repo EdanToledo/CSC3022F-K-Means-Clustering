@@ -37,7 +37,7 @@ public:
     void setMean(float mean);
 
     //Add an image to this cluster
-    void addImage(ImageFeature Image);
+    void addImage(ImageFeature * Image);
 
     //Get an image for this cluster
     ImageFeature *getImage(int index) const;
@@ -46,10 +46,10 @@ public:
     float getMean() const;
 
     //Get all images from this cluster
-     std::vector<ImageFeature *> getAllClusterImages() const;
+    std::vector<ImageFeature *> getAllClusterImages() const;
 
     //calculate new mean based on image features inside this cluster
-     void calculateNewMean();
+    void calculateNewMean();
 };
 
 } // namespace TLDEDA001

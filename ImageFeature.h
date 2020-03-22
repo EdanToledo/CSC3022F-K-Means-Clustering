@@ -10,60 +10,71 @@
 
 namespace TLDEDA001
 {
-    class ImageFeature{
-        //image name
-        std::string name;
-        //histogram feature values for the image
-        int * hist;
-        //DEFAULT BINSIZE = 1, WIDTH & HEIGHT = 32
-        int binSize,width,height;
-        //image feature mean
-        float mean;
+class ImageFeature
+{
+    //image name
+    std::string name;
+    //histogram feature values for the image
+    int *hist;
+    //DEFAULT BINSIZE = 1, WIDTH & HEIGHT = 32
+    int binSize, width, height;
+    //image feature mean
+    float mean;
 
-        public:
+    //raw data of image
+    unsigned char* pixels;
 
-        //Default constructor
-        ImageFeature();
+public:
+    //Default constructor
+    ImageFeature();
 
-        //Destructor
-       ~ImageFeature();
+    //Destructor
+    ~ImageFeature();
 
-        //Parameter Constructor - takes in image in 2D unsigned char array
-        ImageFeature(const std::string & name,unsigned char * pic[]);
+    //Parameter Constructor - takes in image in 2D unsigned char array
+    ImageFeature(const std::string &name, unsigned char pic[]);
 
-        //Parameter Constructor - takes in image in 2D unsigned char array and bin size
-        ImageFeature(const std::string & name, unsigned char *pic[],const int bin);
+    //Parameter Constructor - takes in image in 2D unsigned char array and bin size
+    ImageFeature(const std::string &name, unsigned char pic[], const int bin);
 
-        //Parameter Constructor - takes in image in 2D unsigned char array and bin size as well as width and height of image
-        ImageFeature(const std::string & name, unsigned char *pic[], const int bin, const int width, const int height);
+    //Parameter Constructor - takes in image in 2D unsigned char array and bin size as well as width and height of image
+    ImageFeature(const std::string &name, unsigned char pic[], const int bin, const int width, const int height);
 
-        //calculate distance from this image to the parameter image
-        float calculateDistance(float othermean)const;
+    //Parameter Constructor - takes in image in 2D unsigned char array and bin size as well as width and height of image and colour value limit
+    ImageFeature(const std::string &name, unsigned char pic[], const int bin, const int width, const int height, const int colourVal);
 
-        //setter method for pixels array
-        void setHist(int *histogram);
+    //calculate distance from this image to the parameter image
+    float calculateDistance(float othermean) const;
 
-        //getter method for Hist array
-        int* getHist();
+    //setter method for pixels array
+    void setHist(int *histogram);
 
-        //setter method for bin Size
-        void setBinSize(const int bin);
+    //getter method for Hist array
+    int *getHist();
 
-        //Print hist array
-        void printHist();
+    //setter method for bin Size
+    void setBinSize(const int bin);
 
-        //get name of image
-        std::string getName()const;
+    //Print hist array
+    void printHist();
 
-        //get mean of image
-        float getMean()const;
+    //get name of image
+    std::string getName() const;
 
-        //get mean of image
-        int getBinSize()const;
+    //get mean of image
+    float getMean() const;
 
+    //get mean of image
+    int getBinSize() const;
 
+    //get width
+    int getWidth() const;
 
-    };
+    //get height
+    int getHeight() const;
+
+    //Get raw data of image
+    unsigned char * getPixels();
+};
 
 } // namespace TLDEDA001
-

@@ -11,8 +11,6 @@
 
 using namespace std;
 
-
-
 int main(int argc, char *argv[])
 {
 
@@ -22,7 +20,7 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    string dataset,output;
+    string dataset, output;
     int bin;
     int k;
     dataset = (string)argv[1];
@@ -45,12 +43,11 @@ int main(int argc, char *argv[])
         }
     }
 
+    TLDEDA001::Clusterer clustererobj;
 
-TLDEDA001::Clusterer clustererobj;
-clustererobj.readImages(dataset);
-clustererobj.ClusterImages();
-//cout<<clustererobj;
-    
-    
+    clustererobj.readImages(dataset);
+    clustererobj.ClusterImages();
+    cout<<clustererobj;
+
     return 0;
 }

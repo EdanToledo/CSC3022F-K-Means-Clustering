@@ -9,51 +9,57 @@
 #include <vector>
 #include "Cluster.h"
 
-
 namespace TLDEDA001
 {
-    class Clusterer{
+class Clusterer
+{
 
-        //list of images
-         std::vector<unsigned char **> images;
+    //list of all images in greyscale
+    std::vector<unsigned char *> AllImages;
 
-         //list of clusters
-         std::vector<TLDEDA001::Cluster *> clusters;
+    //list of clusters
+    std::vector<TLDEDA001::Cluster *> clusters;
 
-        //number of clusters to use
-        int numOfClusters;
+    //number of clusters to use
+    int numOfClusters;
 
-        public:
+public:
+    //Constructor
+    Clusterer();
 
-        //Constructor
-        Clusterer();
+    //Parameter Constructor
+    Clusterer(const int NumOfClusters);
 
-        //Parameter Constructor
-        Clusterer(const int NumOfClusters);
-        
-        //Destructor
-        ~Clusterer();
+    //Destructor
+    ~Clusterer();
 
-        //Read in all images and convert them to grayscale from
-        //folder directory "dataset"
-       void readImages(const std::string & dataset);
+    //reads in single ppm image and returns char pointer to array of pixels
+    unsigned char *ReadSingleImage(std::istream &inputStream, int width, int height);
 
-        //returns all images in dataset in greyscale
-        std::vector<unsigned char **> getAllImages() const;
+    //Converts image to greyscale
+    unsigned char *ConvertToGreyScale(unsigned char *ptr, int width, int height);
 
-        //returns all clusters in a vector
-         std::vector<Cluster *> getAllClusters()const;
+    //Prints PPM Image
+    void PrintImage(std::ostream &outputStream, unsigned char *ptr, int width, int height, int colourval);
 
-        //get specific cluster
-         Cluster* getCluster(const int index)const;
+    //Read in all images and convert them to greyscale from
+    //folder directory "dataset"
+    void readImages(const std::string &dataset);
 
-        //separates images into their respective clusters
-         void ClusterImages();
+    //returns all images in dataset in greyscale
+    std::vector<unsigned char *> getAllImages() const;
 
-        //operator overloaded for input into a stream in correct format
-        friend std::ostream& operator<<(std::ostream&os,const Clusterer & clusterer);
+    //returns all clusters in a vector
+    std::vector<Cluster *> getAllClusters() const;
 
+    //get specific cluster
+    Cluster *getCluster(const int index) const;
 
-    };
+    //separates images into their respective clusters
+    void ClusterImages();
+
+    //operator overloaded for input into a stream in correct format
+    friend std::ostream &operator<<(std::ostream &os, const Clusterer &clusterer);
+};
 
 } // namespace TLDEDA001
