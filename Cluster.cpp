@@ -81,3 +81,8 @@ void TLDEDA001::Cluster::calculateNewMean()
     temp = temp / imageFeatures.size();
     this->mean = temp;
 }
+
+//clears all images for the cluster
+    void TLDEDA001::Cluster::clearAllImages(){
+        this->imageFeatures.clear();
+    }

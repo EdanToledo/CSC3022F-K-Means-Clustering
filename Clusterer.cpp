@@ -38,6 +38,9 @@ TLDEDA001::Clusterer::~Clusterer()
     {
         delete[] this->AllImages[i];
     }
+
+     
+
 }
 
 //Reads a single image and puts it into a char ptr and returns it
@@ -128,8 +131,6 @@ void TLDEDA001::Clusterer::readImages(const string &dataset)
             in.close();
         }
     }
-
-    
 }
 
 //returns all images in dataset in greyscale
@@ -182,7 +183,8 @@ void TLDEDA001::Clusterer::ClusterImages()
             count++;
         }
     }
-    
+
+    srand(time(0));
     vector<int> randomIndexes;
 
     for (int i = 0; i < ImagesAsFeatures.size(); i++)
@@ -195,74 +197,90 @@ void TLDEDA001::Clusterer::ClusterImages()
     for (int i = 0; i < numOfClusters; i++)
     {
         this->clusters.push_back(new TLDEDA001::Cluster(*ImagesAsFeatures[randomIndexes[i]]));
-        
     }
-    
-    
-    
-    float min = ImagesAsFeatures[0]->calculateDistance(clusters[0]->getMean());
-        
-  
+
     for (int i = 0; i < ImagesAsFeatures.size(); i++)
     {
-         
+        float min = ImagesAsFeatures[i]->calculateDistance(clusters[0]->getMean());
         int index = 0;
         for (int j = 0; j < this->clusters.size(); j++)
         {
-             
-            if (ImagesAsFeatures[i]->calculateDistance(clusters[j]->getMean())<min)
+
+            if (ImagesAsFeatures[i]->calculateDistance(clusters[j]->getMean()) < min)
             {
-               min = ImagesAsFeatures[i]->calculateDistance(clusters[j]->getMean());
-               index=j;
+                min = ImagesAsFeatures[i]->calculateDistance(clusters[j]->getMean());
+                index = j;
             }
-            
         }
-        
 
         this->clusters[index]->addImage(ImagesAsFeatures[i]);
-        
+
         this->clusters[index]->calculateNewMean();
-       
-    }
-    
-    /*
-    while (true)
-    {
-       
-       for (int i = 0; i < imagefeatures.size(); i++)
-    {
-        float min = INT16_MAX;
-        int index = 0;
-        for (int j = 0; i < this->clusters.size(); i++)
-        {
-            
-            if (imagefeatures[i].calculateDistance(clusters[j].getMean())<min)
-            {
-               min = imagefeatures[i].calculateDistance(clusters[j].getMean());
-               index=j;
-            }
-            
-        }
-        this->clusters[index].addImage(imagefeatures[i]);
-        this->clusters[index].calculateNewMean();
     }
 
+   
+
+    bool doneIteration = false;
+
+    while (!doneIteration)
+    {
+         vector<float> oldmeans;
+    for (int i = 0; i < this->numOfClusters; i++)
+    {
+        oldmeans.push_back(this->clusters[i]->getMean());
+         this->clusters[i]->clearAllImages();
+    }
+        
+        for (int i = 0; i < ImagesAsFeatures.size(); i++)
+        {
+            float min = ImagesAsFeatures[i]->calculateDistance(clusters[0]->getMean());
+            int index = 0;
+            for (int j = 0; j < this->clusters.size(); j++)
+            {
+
+                if (ImagesAsFeatures[i]->calculateDistance(clusters[j]->getMean()) < min)
+                {
+                    min = ImagesAsFeatures[i]->calculateDistance(clusters[j]->getMean());
+                    index = j;
+                }
+            }
+           
+            this->clusters[index]->addImage(ImagesAsFeatures[i]);
+
+            this->clusters[index]->calculateNewMean();
+        }
+        
+        doneIteration = iterationCheck(oldmeans,this->clusters);
+    }
+}
+
+//helper method to know when iteration is done - returns true if there is a difference
+bool TLDEDA001::Clusterer::iterationCheck(const vector<float> oldmeans, const vector<TLDEDA001::Cluster *> newmeans) const
+{
+    bool temp = true;
+    for (int i = 0; i < this->numOfClusters; i++)
+    {
+         if (oldmeans[i] != this->clusters[i]->getMean())
+        {
+            temp = false;
+        }
     }
     
-*/
+    return temp;
 }
 
 //operator overloaded for input into a stream in correct format
 ostream &TLDEDA001::operator<<(ostream &os, const TLDEDA001::Clusterer &clusterer)
 {
-
-    for (int i = 0; i < clusterer.clusters.size(); i++)
+    for (int i = 0; i < clusterer.numOfClusters; i++)
     {
-        
-        os << "cluster " << i << ": ";
-        for (int j = 0; j < clusterer.clusters[i]->getAllClusterImages().size(); j++)
+        os << "Cluster " << i << ": ";
+        for (int j = 0; j < clusterer.getCluster(i)->getAllClusterImages().size(); j++)
         {
-            os << clusterer.clusters[i]->getAllClusterImages()[i]->getName() << " ";
+            os << clusterer.getCluster(i)->getImage(j)->getName() << " ";
         }
+        os << endl;
     }
+
+    return os;
 }

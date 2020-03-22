@@ -50,6 +50,9 @@ public:
 
     //calculate new mean based on image features inside this cluster
     void calculateNewMean();
+
+    //clears all images for the cluster
+    void clearAllImages();
 };
 
 } // namespace TLDEDA001

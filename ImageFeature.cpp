@@ -26,7 +26,8 @@ TLDEDA001::ImageFeature::ImageFeature()
 //Destructor
 TLDEDA001::ImageFeature::~ImageFeature()
 {
-    delete[] hist;
+    delete[] this->hist;
+   
 }
 
 //Parameter Constructor - takes in image in 2D unsigned char array
