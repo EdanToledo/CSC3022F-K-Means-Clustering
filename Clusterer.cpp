@@ -22,12 +22,20 @@ using namespace std;
 TLDEDA001::Clusterer::Clusterer()
 {
     this->numOfClusters = 10;
+    this->inColour = false;
 }
 
 //Parameter Constructor
-TLDEDA001::Clusterer::Clusterer(int NumOfClusters)
+TLDEDA001::Clusterer::Clusterer(const int NumOfClusters)
 {
     this->numOfClusters = NumOfClusters;
+    this->inColour = false;
+}
+
+TLDEDA001::Clusterer::Clusterer(const int NumOfClusters,const bool inColour)
+{
+    this->numOfClusters = NumOfClusters;
+    this->inColour = inColour;
 }
 
 //Destructor
@@ -76,11 +84,9 @@ void TLDEDA001::Clusterer::PrintImage(ostream &outputStream, unsigned char *ptr,
 }
 
 //Read in images and convert them to grayscale
-void TLDEDA001::Clusterer::readImages(const string &dataset)
+void TLDEDA001::Clusterer::readImagesInGreyScale(const string &dataset)
 {
-
     int width, height, colourval;
-
     vector<string> filenames;
 
     //HARDCODED NAMES
@@ -127,7 +133,59 @@ void TLDEDA001::Clusterer::readImages(const string &dataset)
     }
 }
 
-//returns all images in dataset in greyscale
+//Read in images in colour
+void TLDEDA001::Clusterer::readImagesInColour(const string &dataset)
+{
+
+    int width, height, colourval;
+
+    vector<string> filenames;
+
+    //HARDCODED NAMES
+
+    filenames.push_back("one_");
+    filenames.push_back("two_");
+    filenames.push_back("three_");
+    filenames.push_back("four_");
+    filenames.push_back("five_");
+    filenames.push_back("six_");
+    filenames.push_back("seven_");
+    filenames.push_back("eight_");
+    filenames.push_back("nine_");
+    filenames.push_back("zero_");
+
+    for (int i = 0; i < 10; i++)
+    {
+        for (int j = 0; j < 10; j++)
+        {
+
+            ifstream in(dataset + filenames[i] + to_string(j + 1) + ".ppm", ios::binary);
+
+            string line;
+
+            getline(in, line);
+
+            if (line != "P6")
+            {
+                break;
+            }
+
+            while (line.at(0) == '#')
+            {
+                getline(in, line);
+            }
+
+            in >> width >> ws >> height;
+            getline(in, line);
+            in >> colourval >> ws;
+
+            this->AllImages.push_back((ReadSingleImage(in, width, height)));
+            in.close();
+        }
+    }
+}
+
+//returns all images in dataset 
 vector<unsigned char *> TLDEDA001::Clusterer::getAllImages() const
 {
     return this->AllImages;

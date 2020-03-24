@@ -151,7 +151,7 @@ float TLDEDA001::ImageFeature::calculateDistance(float othermean) const
     return std::pow((othermean - this->mean), 2);
 }
 
-//setter method for pixels array
+//setter method for hist array
 void TLDEDA001::ImageFeature::setHist(int *histogram)
 {
     for (int i = 0; i < ((int)(std::ceil(256 / binSize))); i++)

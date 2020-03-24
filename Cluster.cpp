@@ -22,6 +22,7 @@ TLDEDA001::Cluster::Cluster(float mean)
 
     this->mean = mean;
 }
+
 //Destructor
 TLDEDA001::Cluster::~Cluster()
 {

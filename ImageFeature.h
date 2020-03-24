@@ -46,7 +46,7 @@ public:
     //calculate distance from this image to the parameter image
     float calculateDistance(float othermean) const;
 
-    //setter method for pixels array
+    //setter method for hist array
     void setHist(int *histogram);
 
     //getter method for Hist array

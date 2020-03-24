@@ -17,7 +17,8 @@ class Clusterer
     //list of all images in greyscale
     std::vector<unsigned char *> AllImages;
 
-    
+    //bool to tell clusterer whether to use standard image features or colour image features
+    bool inColour;
 
     //list of clusters
     std::vector<TLDEDA001::Cluster *> clusters;
@@ -31,7 +32,10 @@ public:
 
     //Parameter Constructor
     Clusterer(const int NumOfClusters);
+    //Parameter Constructor
 
+    Clusterer(const int NumOfClusters,const bool inColour);
+   
     //Destructor
     ~Clusterer();
 
@@ -46,7 +50,9 @@ public:
 
     //Read in all images and convert them to greyscale from
     //folder directory "dataset"
-    void readImages(const std::string &dataset);
+    void readImagesInGreyScale(const std::string &dataset);
+
+    void readImagesInColour(const std::string &dataset);
 
     //returns all images in dataset in greyscale
     std::vector<unsigned char *> getAllImages() const;
