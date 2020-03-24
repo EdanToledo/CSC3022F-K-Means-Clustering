@@ -21,9 +21,11 @@ int main(int argc, char *argv[])
     }
 
     string dataset, output;
-    int bin;
-    int k;
+    int bin = 1;
+    int k = 10;
     dataset = (string)argv[1];
+
+ 
     for (int i = 1; i < argc; i++)
     {
 
@@ -40,14 +42,21 @@ int main(int argc, char *argv[])
         {
 
             bin = stoi((string)argv[i + 1]);
+            
         }
     }
 
-    TLDEDA001::Clusterer clustererobj;
-
-    clustererobj.readImages(dataset);
-    clustererobj.ClusterImages();
+   TLDEDA001::Clusterer clustererobj(k);
+     clustererobj.readImages(dataset);
+ clustererobj.ClusterImages(bin);
+   
+   
     cout<<clustererobj;
+
+    
+    
+
+
 
     return 0;
 }

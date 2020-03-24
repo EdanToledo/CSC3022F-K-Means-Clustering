@@ -27,6 +27,7 @@ TLDEDA001::ImageFeature::ImageFeature()
 TLDEDA001::ImageFeature::~ImageFeature()
 {
     delete[] this->hist;
+    delete[] this->pixels;
    
 }
 
@@ -53,9 +54,9 @@ TLDEDA001::ImageFeature::ImageFeature(const std::string &name, unsigned char pic
     float tempmean = 0;
     for (int i = 0; i < (int)(std::ceil(256 / binSize)); i++)
     {
-        tempmean += hist[i] * i;
+        tempmean += hist[i] * i * binSize;
     }
-    tempmean = tempmean / (width * height);
+    tempmean = tempmean / width*height;
     this->mean = tempmean;
 }
 
@@ -82,9 +83,9 @@ TLDEDA001::ImageFeature::ImageFeature(const std::string &name, unsigned char pic
     float tempmean = 0;
     for (int i = 0; i < (int)(std::ceil(256 / binSize)); i++)
     {
-        tempmean += hist[i] * i;
+        tempmean += hist[i] * i * binSize;
     }
-    tempmean = tempmean / (width * height);
+    tempmean = tempmean / width*height;
     this->mean = tempmean;
 }
 
@@ -110,9 +111,9 @@ TLDEDA001::ImageFeature::ImageFeature(const std::string &name, unsigned char pic
     float tempmean = 0;
     for (int i = 0; i < (int)(std::ceil(256 / binSize)); i++)
     {
-        tempmean += hist[i] * i;
+        tempmean += hist[i] * i * binSize;
     }
-    tempmean = tempmean / (width * height);
+    tempmean = tempmean / width*height;
     this->mean = tempmean;
 }
 
@@ -138,9 +139,9 @@ TLDEDA001::ImageFeature::ImageFeature(const std::string &name, unsigned char pic
     float tempmean = 0;
     for (int i = 0; i < (int)(std::ceil(256 / binSize)); i++)
     {
-        tempmean += hist[i] * i;
+        tempmean += hist[i] * i * binSize;
     }
-    tempmean = tempmean / (width * height);
+    tempmean = tempmean / width*height;
     this->mean = tempmean;
 }
 
@@ -153,7 +154,6 @@ float TLDEDA001::ImageFeature::calculateDistance(float othermean) const
 //setter method for pixels array
 void TLDEDA001::ImageFeature::setHist(int *histogram)
 {
-
     for (int i = 0; i < ((int)(std::ceil(256 / binSize))); i++)
     {
         this->hist[i] = histogram[i];

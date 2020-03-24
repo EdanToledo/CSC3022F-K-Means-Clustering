@@ -33,14 +33,8 @@ TLDEDA001::Clusterer::Clusterer(int NumOfClusters)
 //Destructor
 TLDEDA001::Clusterer::~Clusterer()
 {
-
-    for (int i = 0; i < this->AllImages.size(); i++)
-    {
-        delete[] this->AllImages[i];
-    }
-
-     
-
+// Doesnt need to destroy its member variables due to the vector class automatically destroying the pointers when it goes out of scope
+// and the destructors of the respective classes delete all the data
 }
 
 //Reads a single image and puts it into a char ptr and returns it
@@ -153,7 +147,7 @@ TLDEDA001::Cluster *TLDEDA001::Clusterer::getCluster(const int index) const
 
 //FIX THIS METHOD
 //separates images into their respective clusters
-void TLDEDA001::Clusterer::ClusterImages()
+void TLDEDA001::Clusterer::ClusterImages(int binSize)
 {
 
     vector<TLDEDA001::ImageFeature *> ImagesAsFeatures;
@@ -178,7 +172,7 @@ void TLDEDA001::Clusterer::ClusterImages()
         for (int j = 0; j < 10; j++)
         {
 
-            ImagesAsFeatures.push_back(new TLDEDA001::ImageFeature(filenames[i] + to_string(j + 1), this->AllImages[count]));
+            ImagesAsFeatures.push_back(new TLDEDA001::ImageFeature(filenames[i] + to_string(j + 1), this->AllImages[count],binSize));
 
             count++;
         }
@@ -202,6 +196,7 @@ void TLDEDA001::Clusterer::ClusterImages()
     for (int i = 0; i < ImagesAsFeatures.size(); i++)
     {
         float min = ImagesAsFeatures[i]->calculateDistance(clusters[0]->getMean());
+      
         int index = 0;
         for (int j = 0; j < this->clusters.size(); j++)
         {

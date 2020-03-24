@@ -12,16 +12,8 @@ TLDEDA001::Cluster::Cluster() {}
 //Parameter Constructor
 TLDEDA001::Cluster::Cluster(ImageFeature meanfeature)
 {
-    float tempmean = 0;
-    for (int i = 0; i < (int)(std::ceil(256 / meanfeature.getBinSize())); i++)
-    {
-        tempmean += meanfeature.getHist()[i]*i;
-       
-    }
-    tempmean = tempmean / (meanfeature.getWidth() * meanfeature.getHeight());
-
-   
-    this->mean = tempmean;
+    
+    this->mean = meanfeature.getMean();
 }
 
 //Parameter Constructor

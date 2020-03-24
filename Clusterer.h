@@ -17,6 +17,8 @@ class Clusterer
     //list of all images in greyscale
     std::vector<unsigned char *> AllImages;
 
+    
+
     //list of clusters
     std::vector<TLDEDA001::Cluster *> clusters;
 
@@ -56,7 +58,7 @@ public:
     Cluster *getCluster(const int index) const;
 
     //separates images into their respective clusters
-    void ClusterImages();
+    void ClusterImages(int binSize);
 
     //operator overloaded for input into a stream in correct format
     friend std::ostream & operator<<(std::ostream &os, const Clusterer &clusterer);
