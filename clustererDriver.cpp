@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 
     for (int i = 1; i < argc; i++)
     {
-        
+
         if ((string)argv[i] == "-o")
         {
             output = (string)argv[i + 1];
@@ -48,19 +48,15 @@ int main(int argc, char *argv[])
             colour = true;
         }
     }
-    
     TLDEDA001::Clusterer clustererobj(k);
-
-    if (colour==false)
+    if (colour == true)
     {
-        clustererobj.readImagesInGreyScale(dataset);
-        clustererobj.ClusterGreyScaleImages(bin);
-    }else{
-        clustererobj.readImagesInColour(dataset);
-        clustererobj.ClusterColourImages(bin);
+        clustererobj.setColour(true);
     }
-   
 
+    clustererobj.readImages(dataset);
+    clustererobj.ClusterImages(bin);
+    
     if (output == "")
     {
         cout << clustererobj;

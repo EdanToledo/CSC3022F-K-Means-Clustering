@@ -15,6 +15,7 @@
 #include <array>
 #include <random>
 #include <chrono>
+#include <dirent.h>
 
 using namespace std;
 
@@ -77,104 +78,71 @@ void TLDEDA001::Clusterer::PrintImage(ostream &outputStream, unsigned char *ptr,
     outputStream.write(reinterpret_cast<char *>(ptr), width * height * 3);
 }
 
-//Read in images and convert them to grayscale
-void TLDEDA001::Clusterer::readImagesInGreyScale(const string &dataset)
+//Read in images in colour
+void TLDEDA001::Clusterer::readImages(const string &dataset)
 {
     int width, height, colourval;
-    vector<string> filenames;
 
-    //HARDCODED NAMES
-
-    filenames.push_back("one_");
-    filenames.push_back("two_");
-    filenames.push_back("three_");
-    filenames.push_back("four_");
-    filenames.push_back("five_");
-    filenames.push_back("six_");
-    filenames.push_back("seven_");
-    filenames.push_back("eight_");
-    filenames.push_back("nine_");
-    filenames.push_back("zero_");
-
-    for (int i = 0; i < 10; i++)
+    DIR *dirpointer = opendir(dataset.c_str());
+    dirent *entry = readdir(dirpointer);
+    int count = 0;
+    string avoid1 = ".";
+    string avoid2 = "..";
+    while (entry)
     {
-        for (int j = 0; j < 10; j++)
+
+        if (((string)entry->d_name).compare(".") == 0 || ((string)entry->d_name).compare("..") == 0)
         {
-
-            ifstream in(dataset + filenames[i] + to_string(j + 1) + ".ppm", ios::binary);
-
-            string line;
-
-            getline(in, line);
-
-            if (line != "P6")
-            {
-                break;
-            }
-
-            while (line.at(0) == '#')
-            {
-                getline(in, line);
-            }
-
-            in >> width >> ws >> height;
-            getline(in, line);
-            in >> colourval >> ws;
-
-            this->AllImages.push_back(ConvertToGreyScale(ReadSingleImage(in, width, height), width, height));
-            in.close();
+            entry = readdir(dirpointer);
+            continue;
         }
+
+        filenames.push_back(entry->d_name);
+
+        count++;
+        entry = readdir(dirpointer);
+    }
+
+    for (int i = 0; i < filenames.size(); i++)
+    {
+
+        ifstream in(dataset + filenames[i], ios::binary);
+
+        string line;
+
+        getline(in, line);
+
+        if (line != "P6")
+        {
+            break;
+        }
+
+        while (line.at(0) == '#')
+        {
+            getline(in, line);
+        }
+
+        in >> width >> ws >> height;
+        getline(in, line);
+        in >> colourval >> ws;
+
+        if (inColour)
+        {
+            this->AllImages.push_back(ReadSingleImage(in, width, height));
+        }
+        else
+        {
+            this->AllImages.push_back(ConvertToGreyScale(ReadSingleImage(in, width, height), width, height));
+        }
+
+        in.close();
     }
 }
 
-//Read in images in colour
-void TLDEDA001::Clusterer::readImagesInColour(const string &dataset)
+//sets in colour
+void TLDEDA001::Clusterer::setColour(const bool inColour)
 {
-    int width, height, colourval;
-    vector<string> filenames;
-
-    //HARDCODED NAMES
-
-    filenames.push_back("one_");
-    filenames.push_back("two_");
-    filenames.push_back("three_");
-    filenames.push_back("four_");
-    filenames.push_back("five_");
-    filenames.push_back("six_");
-    filenames.push_back("seven_");
-    filenames.push_back("eight_");
-    filenames.push_back("nine_");
-    filenames.push_back("zero_");
-
-    for (int i = 0; i < 10; i++)
-    {
-        for (int j = 0; j < 10; j++)
-        {
-
-            ifstream in(dataset + filenames[i] + to_string(j + 1) + ".ppm", ios::binary);
-
-            string line;
-
-            getline(in, line);
-
-            if (line != "P6")
-            {
-                break;
-            }
-
-            while (line.at(0) == '#')
-            {
-                getline(in, line);
-            }
-
-            in >> width >> ws >> height;
-            getline(in, line);
-            in >> colourval >> ws;
-
-            this->AllImages.push_back((unsigned char *)ReadSingleImage(in, width, height));
-            in.close();
-        }
-    }
+    this->inColour = inColour;
 }
 
 //returns all images in dataset
@@ -196,133 +164,20 @@ TLDEDA001::Cluster *TLDEDA001::Clusterer::getCluster(const int index) const
 }
 
 //separates images into their respective clusters
-void TLDEDA001::Clusterer::ClusterGreyScaleImages(const int binSize)
+void TLDEDA001::Clusterer::ClusterImages(const int binSize)
 {
 
-    //HARDCODED NAMES
-    vector<string> filenames;
-    filenames.push_back("one_");
-    filenames.push_back("two_");
-    filenames.push_back("three_");
-    filenames.push_back("four_");
-    filenames.push_back("five_");
-    filenames.push_back("six_");
-    filenames.push_back("seven_");
-    filenames.push_back("eight_");
-    filenames.push_back("nine_");
-    filenames.push_back("zero_");
-
     vector<TLDEDA001::ImageFeature *> ImagesAsFeatures;
-    int count = 0;
-    for (int i = 0; i < 10; i++)
+
+    for (int i = 0; i < filenames.size(); i++)
     {
-        for (int j = 0; j < 10; j++)
+        if (!inColour)
         {
-
-            ImagesAsFeatures.push_back(new TLDEDA001::ImageFeature(filenames[i] + to_string(j + 1), this->AllImages[count], binSize));
-
-            count++;
+            ImagesAsFeatures.push_back(new TLDEDA001::ImageFeature(filenames[i], this->AllImages[i], binSize));
         }
-    }
-
-    srand(time(0));
-    vector<int> randomIndexes;
-
-    for (int i = 0; i < ImagesAsFeatures.size(); i++)
-    {
-        randomIndexes.push_back(i);
-    }
-
-    std::random_shuffle(randomIndexes.begin(), randomIndexes.end());
-
-    for (int i = 0; i < numOfClusters; i++)
-    {
-        this->clusters.push_back(new TLDEDA001::Cluster(*ImagesAsFeatures[randomIndexes[i]]));
-    }
-
-    for (int i = 0; i < ImagesAsFeatures.size(); i++)
-    {
-        float min = ImagesAsFeatures[i]->calculateDistance(clusters[0]->getMean());
-
-        int index = 0;
-        for (int j = 0; j < this->clusters.size(); j++)
+        else
         {
-
-            if (ImagesAsFeatures[i]->calculateDistance(clusters[j]->getMean()) < min)
-            {
-                min = ImagesAsFeatures[i]->calculateDistance(clusters[j]->getMean());
-                index = j;
-            }
-        }
-
-        this->clusters[index]->addImage(ImagesAsFeatures[i]);
-
-        this->clusters[index]->calculateNewMean();
-    }
-
-    bool doneIteration = false;
-
-    while (!doneIteration)
-    {
-        vector<float> oldmeans;
-        for (int i = 0; i < this->numOfClusters; i++)
-        {
-            oldmeans.push_back(this->clusters[i]->getMean());
-            this->clusters[i]->clearAllImages();
-        }
-
-        for (int i = 0; i < ImagesAsFeatures.size(); i++)
-        {
-            float min = ImagesAsFeatures[i]->calculateDistance(clusters[0]->getMean());
-            int index = 0;
-            for (int j = 0; j < this->clusters.size(); j++)
-            {
-
-                if (ImagesAsFeatures[i]->calculateDistance(clusters[j]->getMean()) < min)
-                {
-                    min = ImagesAsFeatures[i]->calculateDistance(clusters[j]->getMean());
-                    index = j;
-                }
-            }
-
-            this->clusters[index]->addImage(ImagesAsFeatures[i]);
-
-            this->clusters[index]->calculateNewMean();
-        }
-
-        doneIteration = iterationCheck(oldmeans, this->clusters);
-    }
-}
-
-//separates colour images into their respective clusters
-void TLDEDA001::Clusterer::ClusterColourImages(const int binSize)
-{
-
-    //HARDCODED NAMES
-    vector<string> filenames;
-    filenames.push_back("one_");
-    filenames.push_back("two_");
-    filenames.push_back("three_");
-    filenames.push_back("four_");
-    filenames.push_back("five_");
-    filenames.push_back("six_");
-    filenames.push_back("seven_");
-    filenames.push_back("eight_");
-    filenames.push_back("nine_");
-    filenames.push_back("zero_");
-
-    vector<TLDEDA001::ImageFeature *> ImagesAsFeatures;
-    int count = 0;
-    for (int i = 0; i < 10; i++)
-    {
-
-        for (int j = 0; j < 10; j++)
-        {
-
-           
-            ImagesAsFeatures.push_back(new TLDEDA001::ImageFeature(filenames[i] + to_string(j + 1), this->AllImages[count], binSize,true));   
-            count++;
-            
+            ImagesAsFeatures.push_back(new TLDEDA001::ImageFeature(filenames[i], this->AllImages[i], binSize, true));
         }
     }
 
