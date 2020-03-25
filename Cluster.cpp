@@ -12,7 +12,7 @@ TLDEDA001::Cluster::Cluster() {}
 //Parameter Constructor
 TLDEDA001::Cluster::Cluster(ImageFeature meanfeature)
 {
-    
+
     this->mean = meanfeature.getMean();
 }
 
@@ -28,7 +28,7 @@ TLDEDA001::Cluster::~Cluster()
 {
     for (int i = 0; i < imageFeatures.size(); i++)
     {
-        delete(imageFeatures[i]);
+        delete (imageFeatures[i]);
     }
 }
 
@@ -39,7 +39,7 @@ void TLDEDA001::Cluster::setMean(float mean)
 }
 
 //Add an image to this cluster
-void TLDEDA001::Cluster::addImage(ImageFeature* Image)
+void TLDEDA001::Cluster::addImage(ImageFeature *Image)
 {
     this->imageFeatures.push_back(Image);
 }
@@ -65,7 +65,7 @@ float TLDEDA001::Cluster::getMean() const
 //calculate new mean based on image features inside this cluster
 void TLDEDA001::Cluster::calculateNewMean()
 {
-    
+
     float temp = 0;
     for (int i = 0; i < imageFeatures.size(); i++)
     {
@@ -76,6 +76,7 @@ void TLDEDA001::Cluster::calculateNewMean()
 }
 
 //clears all images for the cluster
-    void TLDEDA001::Cluster::clearAllImages(){
-        this->imageFeatures.clear();
-    }
+void TLDEDA001::Cluster::clearAllImages()
+{
+    this->imageFeatures.clear();
+}

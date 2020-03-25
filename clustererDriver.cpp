@@ -25,10 +25,10 @@ int main(int argc, char *argv[])
     int k = 10;
     dataset = (string)argv[1];
     bool colour = false;
- 
+
     for (int i = 1; i < argc; i++)
     {
-
+        
         if ((string)argv[i] == "-o")
         {
             output = (string)argv[i + 1];
@@ -42,44 +42,34 @@ int main(int argc, char *argv[])
         {
 
             bin = stoi((string)argv[i + 1]);
-            
         }
-        else if((string)argv[i] == "-color"){
+        else if ((string)argv[i] == "-color")
+        {
             colour = true;
         }
-
-        
     }
     
     TLDEDA001::Clusterer clustererobj(k);
-   
-    if (!colour)
+
+    if (colour==false)
     {
         clustererobj.readImagesInGreyScale(dataset);
-        clustererobj.ClusterImages(bin);
-    }else
-    {
-
+        clustererobj.ClusterGreyScaleImages(bin);
+    }else{
+        clustererobj.readImagesInColour(dataset);
+        clustererobj.ClusterColourImages(bin);
     }
-    
-   
-   
-   if (output == "")
-   {
-       cout<<clustererobj;
-   }else
-   {
-       ofstream out(output);
-       out<<clustererobj;
-   }
-   
-   
    
 
-    
-    
-
-
+    if (output == "")
+    {
+        cout << clustererobj;
+    }
+    else
+    {
+        ofstream out(output);
+        out << clustererobj;
+    }
 
     return 0;
 }

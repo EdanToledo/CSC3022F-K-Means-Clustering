@@ -14,7 +14,7 @@ namespace TLDEDA001
 class Cluster
 {
 
-    //Feature that describes this cluster
+    //mean of this cluster
     float mean;
 
     //List of imagefeatures in this cluster
@@ -37,7 +37,7 @@ public:
     void setMean(float mean);
 
     //Add an image to this cluster
-    void addImage(ImageFeature * Image);
+    void addImage(ImageFeature *Image);
 
     //Get an image for this cluster
     ImageFeature *getImage(int index) const;
