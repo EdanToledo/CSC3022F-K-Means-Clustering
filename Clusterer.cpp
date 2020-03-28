@@ -16,6 +16,7 @@
 #include <random>
 #include <chrono>
 #include <dirent.h>
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -136,6 +137,7 @@ void TLDEDA001::Clusterer::readImages(const string &dataset)
         }
 
         in.close();
+       // sort(filenames.begin(),filenames.end());
     }
 }
 

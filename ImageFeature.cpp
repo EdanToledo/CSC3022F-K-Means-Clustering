@@ -122,7 +122,7 @@ TLDEDA001::ImageFeature::ImageFeature(const std::string &name, unsigned char pic
     {
         tempmean += hist[i] * i * binSize;
     }
-    tempmean = tempmean / width * height;
+    tempmean = tempmean / (width * height);
     this->mean = tempmean;
 }
 
@@ -152,8 +152,9 @@ TLDEDA001::ImageFeature::ImageFeature(const std::string &name, unsigned char pic
     {
         tempmean += hist[i] * i * binSize;
     }
-    tempmean = tempmean / width * height;
+    tempmean = tempmean / (width * height);
     this->mean = tempmean;
+    
 }
 
 //Parameter Constructor - takes in image in 2D unsigned char array and bin size
@@ -192,7 +193,7 @@ TLDEDA001::ImageFeature::ImageFeature(const std::string &name, unsigned char pic
     {
         tempmean += hist[i] * i * binSize;
     }
-    tempmean = tempmean / width * height;
+    tempmean = tempmean / (width * height);
     this->mean = tempmean;
 }
 
@@ -221,7 +222,7 @@ TLDEDA001::ImageFeature::ImageFeature(const std::string &name, unsigned char pic
     {
         tempmean += hist[i] * i * binSize;
     }
-    tempmean = tempmean / width * height;
+    tempmean = tempmean / (width * height);
     this->mean = tempmean;
 }
 
@@ -263,7 +264,7 @@ TLDEDA001::ImageFeature::ImageFeature(const std::string &name, unsigned char pic
     {
         tempmean += hist[i] * i * binSize;
     }
-    tempmean = tempmean / width * height;
+    tempmean = tempmean / (width * height);
     this->mean = tempmean;
 }
 
@@ -292,14 +293,14 @@ TLDEDA001::ImageFeature::ImageFeature(const std::string &name, unsigned char pic
     {
         tempmean += hist[i] * i * binSize;
     }
-    tempmean = tempmean / width * height;
+    tempmean = tempmean / (width * height);
     this->mean = tempmean;
 }
 
 //calculate distance from this image to the parameter image
 float TLDEDA001::ImageFeature::calculateDistance(float othermean) const
 {
-    return std::pow((othermean - this->mean), 2);
+    return std::abs((othermean - this->mean));
 }
 
 //setter method for hist array
