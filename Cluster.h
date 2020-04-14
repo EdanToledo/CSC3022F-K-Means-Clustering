@@ -25,7 +25,7 @@ public:
     Cluster();
 
     //Parameter Constructor
-    Cluster(ImageFeature meanfeature);
+    Cluster(ImageFeature *meanfeature);
 
     
 

@@ -10,10 +10,10 @@
 TLDEDA001::Cluster::Cluster() {}
 
 //Parameter Constructor
-TLDEDA001::Cluster::Cluster(ImageFeature meanfeature)
+TLDEDA001::Cluster::Cluster(ImageFeature* meanfeature)
 {
 
-    this->MeanHist = new ImageFeature(meanfeature);
+    this->MeanHist = new ImageFeature(*meanfeature);
    
 }
 

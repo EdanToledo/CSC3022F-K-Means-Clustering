@@ -233,7 +233,7 @@ void TLDEDA001::Clusterer::ClusterImages(const int binSize)
 
     for (int i = 0; i < numOfClusters; i++)
     {
-        this->clusters.push_back(new TLDEDA001::Cluster(*ImagesAsFeatures[randomIndexes[i]]));
+        this->clusters.push_back(new TLDEDA001::Cluster(ImagesAsFeatures[randomIndexes[i]]));
     }
 
     AssignImageToCluster(ImagesAsFeatures);
