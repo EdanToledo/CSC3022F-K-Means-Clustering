@@ -19,7 +19,7 @@ TLDEDA001::ImageFeature::ImageFeature()
     {
         hist[i] = 0;
     }
-
+    this->ClusterId=-1;
     this->mean = 0;
     this->colourval = 256;
     this->isColour=false;
@@ -97,179 +97,37 @@ TLDEDA001::ImageFeature &TLDEDA001::ImageFeature::operator=(TLDEDA001::ImageFeat
 }
 
 //Parameter Constructor - takes in image in 2D unsigned char array
-TLDEDA001::ImageFeature::ImageFeature(const std::string &name, unsigned char pic[])
+TLDEDA001::ImageFeature::ImageFeature(const std::string &name, unsigned char pic[]): TLDEDA001::ImageFeature::ImageFeature(name,pic,1,32,32,256,false)
 {
-    this->name = name;
-    binSize = 1;
-    width = 32;
-    height = 32;
-    pixels = pic;
-    this->colourval = 256;
-    hist = new int[(int)(std::ceil(colourval / binSize))];
-
-    for (int i = 0; i < ((int)(std::ceil(colourval / binSize))); i++)
-    {
-        hist[i] = 0;
-    }
-    for (int i = 0; i < width * height * 3; i += 3)
-    {
-
-        hist[(int)pic[i]] += 1;
-    }
-
-    float tempmean = 0;
-    for (int i = 0; i < (int)(std::ceil(colourval / binSize)); i++)
-    {
-        tempmean += hist[i] * i * binSize;
-    }
-    tempmean = tempmean / (width * height);
-    this->mean = tempmean;
-}
-
-//Parameter Constructor - takes in image in 2D unsigned char array and bin size
-TLDEDA001::ImageFeature::ImageFeature(const std::string &name, unsigned char pic[], const int bin)
-{
-    this->name = name;
-    binSize = bin;
-    width = 32;
-    height = 32;
-    pixels = pic;
-    this->colourval = 256;
-    hist = new int[(int)(std::ceil(colourval / binSize))];
-    for (int i = 0; i < ((int)(std::ceil(colourval / binSize))); i++)
-    {
-        hist[i] = 0;
-    }
-
-    for (int i = 0; i < width * height * 3; i += 3)
-    {
-        int index = std::floor(((int)pic[i]) / binSize);
-        hist[index] += 1;
-    }
-    
-    float tempmean = 0;
-    for (int i = 0; i < (int)(std::ceil(colourval / binSize)); i++)
-    {
-        tempmean += hist[i] * i * binSize;
-    }
-    tempmean = tempmean / (width * height);
-    this->mean = tempmean;
     
 }
 
 //Parameter Constructor - takes in image in 2D unsigned char array and bin size
-TLDEDA001::ImageFeature::ImageFeature(const std::string &name, unsigned char pic[], const int bin,const bool colour)
+TLDEDA001::ImageFeature::ImageFeature(const std::string &name, unsigned char pic[], const int bin): TLDEDA001::ImageFeature::ImageFeature(name,pic,bin,32,32,256,false)
 {
-    this->name = name;
-    binSize = bin;
-    width = 32;
-    height = 32;
-    pixels = pic;
-    this->colourval = 256;
-    hist = new int[(int)(std::ceil(colourval / binSize))];
-    for (int i = 0; i < ((int)(std::ceil(colourval / binSize))); i++)
-    {
-        hist[i] = 0;
-    }
-
-    if (colour == true)
-    {
-        for (int i = 0; i < width * height * 3; i ++)
-        {
-            int index = std::floor(((int)pic[i]) / binSize);
-            hist[index] += 1;
-        }
-    }else
-    {
-       for (int i = 0; i < width * height * 3; i +=3)
-        {
-            int index = std::floor(((int)pic[i]) / binSize);
-            hist[index] += 1;
-        }
-    }
     
-    float tempmean = 0;
-    for (int i = 0; i < (int)(std::ceil(colourval / binSize)); i++)
-    {
-        tempmean += hist[i] * i * binSize;
-    }
-    tempmean = tempmean / (width * height);
-    this->mean = tempmean;
+    
+}
+
+//Parameter Constructor - takes in image in 2D unsigned char array and bin size
+TLDEDA001::ImageFeature::ImageFeature(const std::string &name, unsigned char pic[], const int bin,const bool colour): TLDEDA001::ImageFeature::ImageFeature(name,pic,bin,32,32,256,colour)
+{
+    
 }
 
 //Parameter Constructor - takes in image in 2D unsigned char array and bin size as well as width and height of image
-TLDEDA001::ImageFeature::ImageFeature(const std::string &name, unsigned char pic[], const int bin, const int width, const int height)
+TLDEDA001::ImageFeature::ImageFeature(const std::string &name, unsigned char pic[], const int bin, const int width, const int height) : TLDEDA001::ImageFeature::ImageFeature(name,pic,bin,width,height,256,false)
 {
-    this->name = name;
-    binSize = bin;
-    this->width = width;
-    this->height = height;
-    pixels = pic;
-    this->colourval = 256;
-    hist = new int[(int)(std::ceil(colourval / binSize))];
-    for (int i = 0; i < ((int)(std::ceil(colourval / binSize))); i++)
-    {
-        hist[i] = 0;
-    }
-    for (int i = 0; i < width * height * 3; i += 3)
-    {
-        int index = std::floor(((int)pic[i]) / binSize);
-        hist[index] += 1;
-    }
-
-    float tempmean = 0;
-    for (int i = 0; i < (int)(std::ceil(colourval / binSize)); i++)
-    {
-        tempmean += hist[i] * i * binSize;
-    }
-    tempmean = tempmean / (width * height);
-    this->mean = tempmean;
 }
 
 //Parameter Constructor - takes in image in 2D unsigned char array and bin size as well as width and height of image and which colour
 // it is creating a feature for
-TLDEDA001::ImageFeature::ImageFeature(const std::string &name, unsigned char pic[], const int bin, const int width, const int height, const bool colour)
+TLDEDA001::ImageFeature::ImageFeature(const std::string &name, unsigned char pic[], const int bin, const int width, const int height, const bool colour) : TLDEDA001::ImageFeature::ImageFeature(name,pic,bin,width,height,256,colour)
 {
-    this->name = name;
-    binSize = bin;
-    this->width = width;
-    this->height = height;
-    pixels = pic;
-    this->colourval = 256;
-    hist = new int[(int)(std::ceil(colourval / binSize))];
-    for (int i = 0; i < ((int)(std::ceil(colourval / binSize))); i++)
-    {
-        hist[i] = 0;
-    }
-    if (colour == true)
-    {
-        for (int i = 0; i < width * height * 3; i ++)
-        {
-            int index = std::floor(((int)pic[i]) / binSize);
-            hist[index] += 1;
-        }
-    }else
-    {
-       for (int i = 0; i < width * height * 3; i +=3)
-        {
-            int index = std::floor(((int)pic[i]) / binSize);
-            hist[index] += 1;
-        }
-    }
-    
-    
-
-    float tempmean = 0;
-    for (int i = 0; i < (int)(std::ceil(colourval / binSize)); i++)
-    {
-        tempmean += hist[i] * i * binSize;
-    }
-    tempmean = tempmean / (width * height);
-    this->mean = tempmean;
 }
 
 //Parameter Constructor - takes in image in 2D unsigned char array and bin size as well as width and height of image and colour value limit
-TLDEDA001::ImageFeature::ImageFeature(const std::string &name, unsigned char pic[], const int bin, const int width, const int height, const int colourVal)
+TLDEDA001::ImageFeature::ImageFeature(const std::string &name, unsigned char pic[], const int bin, const int width, const int height, const int colourVal,const bool colour)
 {
     this->name = name;
     binSize = bin;
@@ -277,15 +135,28 @@ TLDEDA001::ImageFeature::ImageFeature(const std::string &name, unsigned char pic
     this->height = height;
     pixels = pic;
     this->colourval = colourVal;
+    this->ClusterId=-1;
+
     hist = new int[(int)(std::ceil(colourVal / binSize))];
     for (int i = 0; i < ((int)(std::ceil(colourVal / binSize))); i++)
     {
         hist[i] = 0;
     }
-    for (int i = 0; i < width * height * 3; i += 3)
+    
+     if (colour == true)
     {
-        int index = std::floor(((int)pic[i]) / binSize);
-        hist[index] += 1;
+        for (int i = 0; i < width * height * 3; i ++)
+        {
+            int index = std::floor(((int)pic[i]) / binSize);
+            hist[index] += 1;
+        }
+    }else
+    {
+       for (int i = 0; i < width * height * 3; i +=3)
+        {
+            int index = std::floor(((int)pic[i]) / binSize);
+            hist[index] += 1;
+        }
     }
 
     float tempmean = 0;
@@ -298,9 +169,16 @@ TLDEDA001::ImageFeature::ImageFeature(const std::string &name, unsigned char pic
 }
 
 //calculate distance from this image to the parameter image
-float TLDEDA001::ImageFeature::calculateDistance(float othermean) const
+float TLDEDA001::ImageFeature::calculateDistance(TLDEDA001::ImageFeature othermean) const
 {
-    return std::abs((othermean - this->mean));
+    int binNumbers = (int)(std::ceil(this->colourval / binSize));
+    float runningTotal = 0;
+    for (int i = 0; i < binNumbers; i++)
+    {
+        float diff = hist[i]-othermean.hist[i];
+       runningTotal+= pow(diff,2);
+    }
+    return runningTotal;
 }
 
 //setter method for hist array
@@ -364,3 +242,14 @@ unsigned char *TLDEDA001::ImageFeature::getPixels()
 {
     return this->pixels;
 }
+
+//get get Colour Value
+    int TLDEDA001::ImageFeature::getColourVal() const{
+        return this->colourval;
+    }
+
+    void  TLDEDA001::ImageFeature::setClusterID(int id){
+        this->ClusterId = id;
+    }
+
+    int  TLDEDA001::ImageFeature::getClusterID(){return this->ClusterId;}

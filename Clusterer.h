@@ -62,14 +62,16 @@ public:
     //separates images into their respective clusters
     void ClusterImages(const int binSize);
 
+    //Assign Images to cluster - single iteration
+    bool AssignImageToCluster( std::vector<TLDEDA001::ImageFeature *> ImagesAsFeatures);
+
     //sets in colour
     void setColour(const bool inColour);
 
     //operator overloaded for input into a stream in correct format
     friend std::ostream &operator<<(std::ostream &os, const Clusterer &clusterer);
 
-    //Helper method to check if the values of the previous cluster means are different to the new means
-    bool iterationCheck(const std::vector<float> oldmeans, const std::vector<TLDEDA001::Cluster *> newmeans) const;
+    
 };
 
 } // namespace TLDEDA001

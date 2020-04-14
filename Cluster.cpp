@@ -13,30 +13,21 @@ TLDEDA001::Cluster::Cluster() {}
 TLDEDA001::Cluster::Cluster(ImageFeature meanfeature)
 {
 
-    this->mean = meanfeature.getMean();
-}
-
-//Parameter Constructor
-TLDEDA001::Cluster::Cluster(float mean)
-{
-
-    this->mean = mean;
+    this->MeanHist = new ImageFeature(meanfeature);
+   
 }
 
 //Destructor
 TLDEDA001::Cluster::~Cluster()
 {
+    delete(MeanHist);
     for (int i = 0; i < imageFeatures.size(); i++)
     {
         delete (imageFeatures[i]);
     }
 }
 
-//Set mean feature
-void TLDEDA001::Cluster::setMean(float mean)
-{
-    this->mean = mean;
-}
+
 
 //Add an image to this cluster
 void TLDEDA001::Cluster::addImage(ImageFeature *Image)
@@ -57,22 +48,36 @@ std::vector<TLDEDA001::ImageFeature *> TLDEDA001::Cluster::getAllClusterImages()
 }
 
 //Get the mean image  feature of this cluster
-float TLDEDA001::Cluster::getMean() const
+TLDEDA001::ImageFeature TLDEDA001::Cluster::getMeanFeature() const
 {
-    return this->mean;
+    return *this->MeanHist;
 }
 
 //calculate new mean based on image features inside this cluster
 void TLDEDA001::Cluster::calculateNewMean()
 {
 
-    float temp = 0;
+    int numOfBins = ((int)(std::ceil((MeanHist->getColourVal()) / (MeanHist->getBinSize()))));
+
+    for (int j = 0; j < numOfBins; j++)
+    {
+        MeanHist->getHist()[j] = 0;
+    }
+
     for (int i = 0; i < imageFeatures.size(); i++)
     {
-        temp += imageFeatures[i]->getMean();
+
+        for (int j = 0; j < numOfBins; j++)
+        {
+            MeanHist->getHist()[j] += imageFeatures[i]->getHist()[j];
+        }
     }
-    temp = temp / imageFeatures.size();
-    this->mean = temp;
+
+    for (int k = 0; k < numOfBins; k++)
+    {
+        MeanHist->getHist()[k] /= imageFeatures.size();
+    }
+
 }
 
 //clears all images for the cluster

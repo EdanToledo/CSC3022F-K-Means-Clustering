@@ -29,6 +29,9 @@ class ImageFeature
     //raw data of image
     unsigned char *pixels;
 
+    //Cluster ID
+    int ClusterId;
+
 public:
     //Default constructor
     ImageFeature();
@@ -63,11 +66,11 @@ public:
     //Parameter Constructor - takes in image in 2D unsigned char array and bin size as well as width and height of image and and whether or not there is colour
     ImageFeature(const std::string &name, unsigned char pic[], const int bin, const int width, const int height, const bool colour);
 
-    //Parameter Constructor - takes in image in 2D unsigned char array and bin size as well as width and height of image and colour value limit
-    ImageFeature(const std::string &name, unsigned char pic[], const int bin, const int width, const int height, const int colourVal);
+    //Parameter Constructor - takes in image in 2D unsigned char array and bin size as well as width and height of image and colour value limit and whether or not you use colour
+    ImageFeature(const std::string &name, unsigned char pic[], const int bin, const int width, const int height, const int colourVal ,const bool colour);
 
     //calculate distance from this image to the parameter image
-    float calculateDistance(float othermean) const;
+    float calculateDistance(TLDEDA001::ImageFeature othermean) const;
 
     //setter method for hist array
     void setHist(int *histogram);
@@ -99,8 +102,15 @@ public:
     //get height
     int getHeight() const;
 
+    //get get Colour Value
+    int getColourVal() const;
+
     //Get raw data of image
     unsigned char *getPixels();
+
+    void setClusterID(int id);
+
+    int getClusterID();
 };
 
 } // namespace TLDEDA001

@@ -48,6 +48,7 @@ int main(int argc, char *argv[])
             colour = true;
         }
     }
+    
     TLDEDA001::Clusterer clustererobj(k);
     if (colour == true)
     {

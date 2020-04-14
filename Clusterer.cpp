@@ -103,7 +103,7 @@ void TLDEDA001::Clusterer::readImages(const string &dataset)
         count++;
         entry = readdir(dirpointer);
     }
-
+   //  sort(filenames.begin(),filenames.end());
     for (int i = 0; i < filenames.size(); i++)
     {
 
@@ -137,7 +137,7 @@ void TLDEDA001::Clusterer::readImages(const string &dataset)
         }
 
         in.close();
-       // sort(filenames.begin(),filenames.end());
+        
     }
 }
 
@@ -163,6 +163,44 @@ vector<TLDEDA001::Cluster *> TLDEDA001::Clusterer::getAllClusters() const
 TLDEDA001::Cluster *TLDEDA001::Clusterer::getCluster(const int index) const
 {
     return this->clusters[index];
+}
+
+//Assign Images to cluster - single iteration
+bool TLDEDA001::Clusterer::AssignImageToCluster(vector<TLDEDA001::ImageFeature *> ImagesAsFeatures)
+{
+    bool iterationDone=true;
+    for (int i = 0; i < ImagesAsFeatures.size(); i++)
+    {
+        int index = 0;
+        float min = ImagesAsFeatures[i]->calculateDistance(clusters[0]->getMeanFeature());
+
+        
+        for (int j = 0; j < this->clusters.size(); j++)
+        {
+
+            if (ImagesAsFeatures[i]->calculateDistance(clusters[j]->getMeanFeature()) < min)
+            {
+                min = ImagesAsFeatures[i]->calculateDistance(clusters[j]->getMeanFeature());
+                index = j;
+            }
+        }
+       
+        if (ImagesAsFeatures[i]->getClusterID()!=index)
+        {
+            iterationDone=false;
+        }
+        
+        ImagesAsFeatures[i]->setClusterID(index);
+        this->clusters[index]->addImage(ImagesAsFeatures[i]);
+        
+    }
+
+    for (int i = 0; i < clusters.size(); i++)
+    {
+        this->clusters[i]->calculateNewMean();
+    }
+
+    return iterationDone;
 }
 
 //separates images into their respective clusters
@@ -198,74 +236,24 @@ void TLDEDA001::Clusterer::ClusterImages(const int binSize)
         this->clusters.push_back(new TLDEDA001::Cluster(*ImagesAsFeatures[randomIndexes[i]]));
     }
 
-    for (int i = 0; i < ImagesAsFeatures.size(); i++)
-    {
-        float min = ImagesAsFeatures[i]->calculateDistance(clusters[0]->getMean());
-
-        int index = 0;
-        for (int j = 0; j < this->clusters.size(); j++)
-        {
-
-            if (ImagesAsFeatures[i]->calculateDistance(clusters[j]->getMean()) < min)
-            {
-                min = ImagesAsFeatures[i]->calculateDistance(clusters[j]->getMean());
-                index = j;
-            }
-        }
-
-        this->clusters[index]->addImage(ImagesAsFeatures[i]);
-
-        this->clusters[index]->calculateNewMean();
-    }
-
+    AssignImageToCluster(ImagesAsFeatures);
+   
     bool doneIteration = false;
 
     while (!doneIteration)
     {
-        vector<float> oldmeans;
+      
         for (int i = 0; i < this->numOfClusters; i++)
         {
-            oldmeans.push_back(this->clusters[i]->getMean());
             this->clusters[i]->clearAllImages();
         }
 
-        for (int i = 0; i < ImagesAsFeatures.size(); i++)
-        {
-            float min = ImagesAsFeatures[i]->calculateDistance(clusters[0]->getMean());
-            int index = 0;
-            for (int j = 0; j < this->clusters.size(); j++)
-            {
-
-                if (ImagesAsFeatures[i]->calculateDistance(clusters[j]->getMean()) < min)
-                {
-                    min = ImagesAsFeatures[i]->calculateDistance(clusters[j]->getMean());
-                    index = j;
-                }
-            }
-
-            this->clusters[index]->addImage(ImagesAsFeatures[i]);
-
-            this->clusters[index]->calculateNewMean();
-        }
-
-        doneIteration = iterationCheck(oldmeans, this->clusters);
+        doneIteration = AssignImageToCluster(ImagesAsFeatures);
+      
     }
 }
 
-//helper method to know when iteration is done - returns true if there is a difference
-bool TLDEDA001::Clusterer::iterationCheck(const vector<float> oldmeans, const vector<TLDEDA001::Cluster *> newmeans) const
-{
-    bool temp = true;
-    for (int i = 0; i < this->numOfClusters; i++)
-    {
-        if (oldmeans[i] != this->clusters[i]->getMean())
-        {
-            temp = false;
-        }
-    }
 
-    return temp;
-}
 
 //operator overloaded for input into a stream in correct format
 ostream &TLDEDA001::operator<<(ostream &os, const TLDEDA001::Clusterer &clusterer)
