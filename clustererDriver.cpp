@@ -66,6 +66,7 @@ int main(int argc, char *argv[])
     {
         ofstream out(output);
         out << clustererobj;
+        cout<<"Results outputted to "<<output<<endl;
     }
 
     return 0;

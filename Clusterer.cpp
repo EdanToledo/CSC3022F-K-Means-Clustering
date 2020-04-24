@@ -17,6 +17,7 @@
 #include <chrono>
 #include <dirent.h>
 #include <bits/stdc++.h>
+#include "EdgeFeature.h"
 
 using namespace std;
 
@@ -67,21 +68,25 @@ unsigned char *TLDEDA001::Clusterer::ConvertToGreyScale(unsigned char *ptr, cons
     return ptr;
 }
 
+/*
+//for testing use - depends on circumstances
 //Prints ppm image from char array data
 void TLDEDA001::Clusterer::PrintImage(ostream &outputStream, unsigned char *ptr, const int width, const int height, const int colourval)
 {
-    outputStream << "P6"
+    outputStream << "P5"
                  << " "
                  << width << " "
                  << height << " "
                  << colourval << " ";
 
-    outputStream.write(reinterpret_cast<char *>(ptr), width * height * 3);
+    outputStream.write(reinterpret_cast<char *>(ptr), width * height);
 }
+*/
 
 //Read in images in colour
 void TLDEDA001::Clusterer::readImages(const string &dataset)
 {
+    cout<<"Reading Images..."<<endl;
     int width, height, colourval;
 
     DIR *dirpointer = opendir(dataset.c_str());
@@ -89,6 +94,7 @@ void TLDEDA001::Clusterer::readImages(const string &dataset)
     int count = 0;
     string avoid1 = ".";
     string avoid2 = "..";
+   
     while (entry)
     {
 
@@ -103,7 +109,9 @@ void TLDEDA001::Clusterer::readImages(const string &dataset)
         count++;
         entry = readdir(dirpointer);
     }
-   //  sort(filenames.begin(),filenames.end());
+    
+    
+
     for (int i = 0; i < filenames.size(); i++)
     {
 
@@ -139,6 +147,10 @@ void TLDEDA001::Clusterer::readImages(const string &dataset)
         in.close();
         
     }
+
+    
+   
+    
 }
 
 //sets in colour
@@ -206,7 +218,7 @@ bool TLDEDA001::Clusterer::AssignImageToCluster(vector<TLDEDA001::ImageFeature *
 //separates images into their respective clusters
 void TLDEDA001::Clusterer::ClusterImages(const int binSize)
 {
-
+    cout<<"Clustering Images..."<<endl;
     vector<TLDEDA001::ImageFeature *> ImagesAsFeatures;
 
     for (int i = 0; i < filenames.size(); i++)
@@ -237,7 +249,9 @@ void TLDEDA001::Clusterer::ClusterImages(const int binSize)
     }
 
     AssignImageToCluster(ImagesAsFeatures);
-   
+
+    int iterationcounter = 1;
+
     bool doneIteration = false;
 
     while (!doneIteration)
@@ -249,8 +263,9 @@ void TLDEDA001::Clusterer::ClusterImages(const int binSize)
         }
 
         doneIteration = AssignImageToCluster(ImagesAsFeatures);
-      
+        iterationcounter++;
     }
+    cout<<"Completed Clustering in "<<iterationcounter<<" iterations"<<endl;
 }
 
 
