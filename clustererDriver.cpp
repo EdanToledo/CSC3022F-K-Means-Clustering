@@ -25,6 +25,8 @@ int main(int argc, char *argv[])
     int k = 10;
     dataset = (string)argv[1];
     bool colour = false;
+    bool filter = false;
+    bool sobel = false;
 
     for (int i = 1; i < argc; i++)
     {
@@ -47,17 +49,34 @@ int main(int argc, char *argv[])
         {
             colour = true;
         }
+        else if ((string)argv[i] == "-edgefilter1")
+        {
+            filter = true;
+            sobel = false;
+        }
+        else if ((string)argv[i] == "-edgefilter2")
+        {
+            filter = true;
+            sobel= true;
+        }
     }
     
-    TLDEDA001::Clusterer clustererobj(k);
+    TLDEDA001::Clusterer clustererobj(bin,k);
     if (colour == true)
     {
         clustererobj.setColour(true);
     }
 
     clustererobj.readImages(dataset);
-    clustererobj.ClusterImages(bin);
     
+    if (filter)
+    {
+        clustererobj.RunThroughEdgeFilter(sobel);
+    
+    }
+    
+    clustererobj.ClusterImages();
+      
     if (output == "")
     {
         cout << clustererobj;

@@ -3,7 +3,7 @@ PROGRAM_Driver=clustererDriver
 PREFILE1=Clusterer
 PREFILE2=Cluster
 PREFILE3=ImageFeature
-PREFILE4=EdgeFeature
+
 
 
 CC=g++
@@ -13,22 +13,19 @@ LINK=-o
 FLAGS=-std=c++11 -g
 
 $(PROGRAM_Driver): $(PROGRAM_Driver).o
-	$(CC) $(FLAGS) $(LINK) $(EXECUTABLE_NAME) $(PROGRAM_Driver).o $(PREFILE1).o $(PREFILE2).o $(PREFILE3).o $(PREFILE4).o $(PREFILE4).h
+	$(CC) $(FLAGS) $(LINK) $(EXECUTABLE_NAME) $(PROGRAM_Driver).o $(PREFILE1).o $(PREFILE2).o $(PREFILE3).o
 
-$(PROGRAM_Driver).o: $(PREFILE1).o $(PREFILE1).h $(PREFILE2).o $(PREFILE2).h $(PREFILE3).o $(PREFILE3).h $(PREFILE4).o $(PREFILE4).h
+$(PROGRAM_Driver).o: $(PREFILE1).o $(PREFILE1).h $(PREFILE2).o $(PREFILE2).h $(PREFILE3).o $(PREFILE3).h
 	$(CC) $(FLAGS) $(COMPILE) $(PROGRAM_Driver).o $(PROGRAM_Driver).cpp
 
-$(PREFILE1).o: $(PREFILE1).h $(PREFILE2).o $(PREFILE2).h $(PREFILE3).o $(PREFILE3).h $(PREFILE4).o $(PREFILE4).h
+$(PREFILE1).o: $(PREFILE1).h $(PREFILE2).o $(PREFILE2).h $(PREFILE3).o $(PREFILE3).h
 	$(CC) $(FLAGS) $(COMPILE) $(PREFILE1).o $(PREFILE1).cpp
 
-$(PREFILE2).o: $(PREFILE2).h $(PREFILE3).o $(PREFILE3).h $(PREFILE4).o $(PREFILE4).h
+$(PREFILE2).o: $(PREFILE2).h $(PREFILE3).o $(PREFILE3).h
 	$(CC) $(FLAGS) $(COMPILE) $(PREFILE2).o $(PREFILE2).cpp
 
-$(PREFILE3).o: $(PREFILE3).h $(PREFILE4).o $(PREFILE4).h
+$(PREFILE3).o: $(PREFILE3).h
 	$(CC) $(FLAGS) $(COMPILE) $(PREFILE3).o $(PREFILE3).cpp
-
-$(PREFILE4).o: $(PREFILE4).h
-	$(CC) $(FLAGS) $(COMPILE) $(PREFILE4).o $(PREFILE4).cpp
 
 clean:
 	rm -f *.o
