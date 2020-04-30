@@ -76,13 +76,13 @@ public:
     void setHist(int *histogram);
 
     //getter method for Hist array
-    int *getHist();
+    int *getHist() const;
 
     //setter method for bin Size
     void setBinSize(const int bin);
 
-    //Print hist array
-    void printHist();
+    //Print hist array used for testing
+    void printHist() const;
 
     //get name of image
     std::string getName() const;
@@ -110,7 +110,7 @@ public:
 
     void setClusterID(int id);
 
-    int getClusterID();
+    int getClusterID()const;
 };
 
 } // namespace TLDEDA001

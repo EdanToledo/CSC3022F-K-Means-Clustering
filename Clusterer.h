@@ -14,10 +14,10 @@ namespace TLDEDA001
 class Clusterer
 {
 
-    //list of all images
+    //list of all images in their imagefeature object container
    std::vector<TLDEDA001::ImageFeature *> AllImagesAsFeatures;
-    //names of the images
-    std::vector<std::string> filenames;
+    
+    
     //bool to tell clusterer whether to use standard image features or colour image features
     bool inColour;
 
@@ -45,25 +45,25 @@ public:
     //reads in single ppm image and returns char pointer to array of pixels
     unsigned char *ReadSingleImage(std::istream &inputStream,const int width,const int height);
 
-    //Converts image to greyscale
+    //Converts image to greyscale and returns the greyscale image
     unsigned char *ConvertToGreyScale(unsigned char *ptr,const int width, const int height);
 
-    //Prints PPM Image
+    //Prints PPM Image used for testing
     void PrintImage(std::ostream &outputStream, unsigned char *ptr, const int width,const int height, const int colourval);
 
-    //Reads in all images 
+    //Reads in all images and creates imagefeature objects for them
     void readImages(const std::string &dataset);
 
-    //returns all images in dataset
+    //returns all imagefeatures in the dataset
     std::vector<TLDEDA001::ImageFeature *> getAllImages() const;
 
-    //returns all clusters in a vector
+    //returns all clusters in the vector
     std::vector<Cluster *> getAllClusters() const;
 
-    //get specific cluster
+    //get a specific cluster
     Cluster *getCluster(const int index) const;
 
-    //separates images into their respective clusters
+    //separates images into their respective clusters - runs the algorithm
     void ClusterImages();
 
     //Assign Images to cluster - single iteration
@@ -75,8 +75,8 @@ public:
     //operator overloaded for input into a stream in correct format
     friend std::ostream &operator<<(std::ostream &os, const Clusterer &clusterer);
 
-    //Run the images through a prewitt or sobel filter
-    void RunThroughEdgeFilter(bool sobel);
+    //Runs all the imagefeatures through a prewitt or sobel filter thereby highlighting the edges as the most important feature- image preprocessing
+    void RunThroughEdgeFilter(const bool sobel);
 };
 
 } // namespace TLDEDA001

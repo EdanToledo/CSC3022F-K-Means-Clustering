@@ -191,7 +191,7 @@ void TLDEDA001::ImageFeature::setHist(int *histogram)
 }
 
 //getter method for Hist array
-int *TLDEDA001::ImageFeature::getHist()
+int *TLDEDA001::ImageFeature::getHist()const
 {
     return this->hist;
 }
@@ -202,7 +202,7 @@ void TLDEDA001::ImageFeature::setBinSize(int bin)
     this->binSize = bin;
 }
 
-void TLDEDA001::ImageFeature::printHist()
+void TLDEDA001::ImageFeature::printHist()const
 {
     for (int i = 0; i < ((int)(std::ceil(colourval / binSize))); i++)
     {
@@ -252,4 +252,4 @@ unsigned char *TLDEDA001::ImageFeature::getPixels()
         this->ClusterId = id;
     }
 
-    int  TLDEDA001::ImageFeature::getClusterID(){return this->ClusterId;}
+    int  TLDEDA001::ImageFeature::getClusterID()const{return this->ClusterId;}

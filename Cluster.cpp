@@ -10,7 +10,7 @@
 TLDEDA001::Cluster::Cluster() {}
 
 //Parameter Constructor
-TLDEDA001::Cluster::Cluster(ImageFeature* meanfeature)
+TLDEDA001::Cluster::Cluster(const ImageFeature* meanfeature)
 {
 
     this->MeanHist = new ImageFeature(*meanfeature);
@@ -35,8 +35,8 @@ void TLDEDA001::Cluster::addImage(ImageFeature *Image)
     this->imageFeatures.push_back(Image);
 }
 
-//Get an image for this cluster
-TLDEDA001::ImageFeature *TLDEDA001::Cluster::getImage(int index) const
+//Get an image from this cluster
+TLDEDA001::ImageFeature *TLDEDA001::Cluster::getImage(const int index) const
 {
     return this->imageFeatures[index];
 }
@@ -47,7 +47,7 @@ std::vector<TLDEDA001::ImageFeature *> TLDEDA001::Cluster::getAllClusterImages()
     return this->imageFeatures;
 }
 
-//Get the mean image  feature of this cluster
+//Get the mean image feature of this cluster
 TLDEDA001::ImageFeature TLDEDA001::Cluster::getMeanFeature() const
 {
     return *this->MeanHist;

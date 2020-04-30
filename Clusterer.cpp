@@ -94,6 +94,9 @@ void TLDEDA001::Clusterer::readImages(const string &dataset)
 {
     cout<<"Reading Images..."<<endl;
     int width, height, colourval;
+    
+    //names of the images
+    std::vector<std::string> filenames;
 
     DIR *dirpointer = opendir(dataset.c_str());
     dirent *entry = readdir(dirpointer);
@@ -283,8 +286,8 @@ ostream &TLDEDA001::operator<<(ostream &os, const TLDEDA001::Clusterer &clustere
 }
 
 
- 
-void TLDEDA001::Clusterer::RunThroughEdgeFilter(bool sobel){
+  //Run the images through a prewitt or sobel filter - image preprocessing
+void TLDEDA001::Clusterer::RunThroughEdgeFilter(const bool sobel){
      // Prewitt matrices value
     int GX[3][3] = 
         {
