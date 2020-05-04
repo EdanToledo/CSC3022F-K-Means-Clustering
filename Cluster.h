@@ -14,32 +14,34 @@ namespace TLDEDA001
 class Cluster
 {
     //Mean Histogram
-    ImageFeature *MeanHist;
+    std::vector<std::vector<int>> histograms;
+    int binSize;
+    int colourval;
 
     //List of imagefeatures in this cluster
-    std::vector<ImageFeature *> imageFeatures;
+    std::vector<ImageFeature> imageFeatures;
 
 public:
     //Default Constructor
     Cluster();
 
     //Parameter Constructor
-    Cluster(const ImageFeature *meanfeature);
-
-    //Destructor
-    ~Cluster();
+    Cluster(const ImageFeature &meanfeature);
 
     //Add an image to this cluster
-    void addImage( ImageFeature *Image);
+    void addImage(const ImageFeature & Image);
 
     //Get an image from this cluster
-    ImageFeature *getImage(const int index) const;
+    ImageFeature getImage(const int index) const;
 
-    //Get the mean Feature of this cluster
-    TLDEDA001::ImageFeature getMeanFeature() const;
+    //delete an Image
+    void DelImage(const int index);
+
+    //Get the RGB mean histograms
+    const std::vector<std::vector<int>> & getMeanFeature() const;
 
     //Get all images from this cluster
-    std::vector<ImageFeature *> getAllClusterImages() const;
+    const std::vector<ImageFeature> & getAllClusterImages() const;
 
     //calculate new mean based on image features inside this cluster
     void calculateNewMean();

@@ -15,16 +15,19 @@ class Clusterer
 {
 
     //list of all images in their imagefeature object container
-   std::vector<TLDEDA001::ImageFeature *> AllImagesAsFeatures;
-    
-    
-    //bool to tell clusterer whether to use standard image features or colour image features
+    std::vector<TLDEDA001::ImageFeature> AllImagesAsFeatures;
+
+    //bool to tell clusterer whether to use greyscale image features or colour image features
     bool inColour;
 
+    //bool to tell clusterer whether to use edge filter preprocessing on images
+    bool EdgeFilter, sobel;
+
+    //Bin range
     int binSize;
 
     //list of clusters
-    std::vector<TLDEDA001::Cluster *> clusters;
+    std::vector<TLDEDA001::Cluster> clusters;
 
     //number of clusters to use
     int numOfClusters;
@@ -37,46 +40,42 @@ public:
     Clusterer(const int binSize);
 
     //Parameter Constructor
-    Clusterer(const int binSize,const int NumOfClusters);
+    Clusterer(const int binSize, const int NumOfClusters);
 
     //Parameter Constructor
-    Clusterer(const int binSize,const int NumOfClusters, const bool inColour);
+    Clusterer(const int binSize, const int NumOfClusters, const bool inColour);
 
-    //reads in single ppm image and returns char pointer to array of pixels
-    unsigned char *ReadSingleImage(std::istream &inputStream,const int width,const int height);
+    //Parameter Constructor
+    Clusterer(const int binSize, const int NumOfClusters, const bool inColour, const bool EdgeFilter);
 
-    //Converts image to greyscale and returns the greyscale image
-    unsigned char *ConvertToGreyScale(unsigned char *ptr,const int width, const int height);
+    //reads in single ppm image and returns a vector of unsigned chars
+    std::vector<unsigned char> ReadSingleImage(std::istream &inputStream, const int width, const int height);
+
+    //Converts an image to greyscale and returns the greyscale image in a vector of unsigned chars
+    std::vector<unsigned char> ConvertToGreyScale(std::vector<unsigned char> , const int width, const int height);
 
     //Prints PPM Image used for testing
-    void PrintImage(std::ostream &outputStream, unsigned char *ptr, const int width,const int height, const int colourval);
+    void PrintImage(std::ostream &outputStream, std::vector<unsigned char>, const int width, const int height, const int colourval);
 
-    //Reads in all images and creates imagefeature objects for them
+    //Reads in all images from given directory and creates imagefeature objects for them. This function will convert all the images to greyscale if specified.
     void readImages(const std::string &dataset);
 
-    //returns all imagefeatures in the dataset
-    std::vector<TLDEDA001::ImageFeature *> getAllImages() const;
-
     //returns all clusters in the vector
-    std::vector<Cluster *> getAllClusters() const;
-
-    //get a specific cluster
-    Cluster *getCluster(const int index) const;
+    const std::vector<Cluster> & getAllClusters() const;
 
     //separates images into their respective clusters - runs the algorithm
     void ClusterImages();
 
     //Assign Images to cluster - single iteration
-    bool AssignImageToCluster( std::vector<TLDEDA001::ImageFeature *> ImagesAsFeatures);
+    bool AssignImageToCluster(std::vector<TLDEDA001::ImageFeature> ImagesAsFeatures);
 
-    //sets in colour
+    //sets the incolour boolean.
     void setColour(const bool inColour);
 
     //operator overloaded for input into a stream in correct format
     friend std::ostream &operator<<(std::ostream &os, const Clusterer &clusterer);
 
-    //Runs all the imagefeatures through a prewitt or sobel filter thereby highlighting the edges as the most important feature- image preprocessing
-    void RunThroughEdgeFilter(const bool sobel);
+    void setEdge(const bool edge, const bool sobel);
 };
 
 } // namespace TLDEDA001

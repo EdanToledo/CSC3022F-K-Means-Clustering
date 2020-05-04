@@ -14,7 +14,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 
-    if (argc <= 1 || argc >= 9)
+    if (argc <= 1 || argc >= 11)
     {
         cout << "Arguments were entered incorrectly" << endl;
         return 0;
@@ -57,26 +57,21 @@ int main(int argc, char *argv[])
         else if ((string)argv[i] == "-edgefilter2")
         {
             filter = true;
-            sobel= true;
+            sobel = true;
         }
     }
-    
-    TLDEDA001::Clusterer clustererobj(bin,k);
-    if (colour == true)
+
+    TLDEDA001::Clusterer clustererobj(bin, k, colour, filter);
+    cout<<"Clustering will commence with the following settings: \n"<<"Amount of Clusters: "<<k<<"\n"<<"Bin Range: "<<bin<<"\n"<<"Using RGB: "<<colour<<"\n"<<"Using Edge Filters: "<<filter+sobel<<endl;
+    if (sobel)
     {
-        clustererobj.setColour(true);
+        clustererobj.setEdge(true, true);
     }
 
     clustererobj.readImages(dataset);
-    
-    if (filter)
-    {
-        clustererobj.RunThroughEdgeFilter(sobel);
-    
-    }
-    
+
     clustererobj.ClusterImages();
-      
+
     if (output == "")
     {
         cout << clustererobj;
@@ -85,7 +80,7 @@ int main(int argc, char *argv[])
     {
         ofstream out(output);
         out << clustererobj;
-        cout<<"Results outputted to "<<output<<endl;
+        cout << "Results outputted to " << output << endl;
     }
 
     return 0;

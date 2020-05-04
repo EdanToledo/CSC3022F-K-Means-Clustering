@@ -18,7 +18,6 @@
 #include <dirent.h>
 #include <bits/stdc++.h>
 
-
 using namespace std;
 
 //Default Constructor
@@ -26,39 +25,50 @@ TLDEDA001::Clusterer::Clusterer()
 {
     this->numOfClusters = 10;
     this->inColour = false;
-    this->binSize=1;
+    this->binSize = 1;
 }
 
 //Parameter Constructor
-TLDEDA001::Clusterer::Clusterer(const int binSize) : TLDEDA001::Clusterer::Clusterer(binSize,10, false)
-{
-   
-}
-
-//Parameter Constructor
-TLDEDA001::Clusterer::Clusterer(const int binSize, const int NumOfClusters) : TLDEDA001::Clusterer::Clusterer(binSize,NumOfClusters, false)
+TLDEDA001::Clusterer::Clusterer(const int binSize) : TLDEDA001::Clusterer::Clusterer(binSize, 10, false)
 {
 }
 
 //Parameter Constructor
-TLDEDA001::Clusterer::Clusterer(const int binSize,const int NumOfClusters, const bool inColour)
+TLDEDA001::Clusterer::Clusterer(const int binSize, const int NumOfClusters) : TLDEDA001::Clusterer::Clusterer(binSize, NumOfClusters, false)
+{
+}
+
+//Parameter Constructor
+TLDEDA001::Clusterer::Clusterer(const int binSize, const int NumOfClusters, const bool inColour) : TLDEDA001::Clusterer::Clusterer(binSize, NumOfClusters, inColour, false)
+{
+}
+
+//Parameter Constructor
+TLDEDA001::Clusterer::Clusterer(const int binSize, const int NumOfClusters, const bool inColour, const bool EdgeFilter)
 {
     this->binSize = binSize;
     this->numOfClusters = NumOfClusters;
     this->inColour = inColour;
+    this->EdgeFilter = EdgeFilter;
 }
 
-//Reads a single image and puts it into a char ptr and returns it
-unsigned char *TLDEDA001::Clusterer::ReadSingleImage(istream &inputStream, const int width, const int height)
+void TLDEDA001::Clusterer::setEdge(const bool edge, const bool sobel)
+{
+    this->EdgeFilter = edge;
+    this->sobel = sobel;
+}
+
+//Reads a single image and puts it into a vector and returns it
+vector<unsigned char> TLDEDA001::Clusterer::ReadSingleImage(istream &inputStream, const int width, const int height)
 {
     int size = width * height * 3;
-    unsigned char *ptr = new unsigned char[size];
-    inputStream.read(reinterpret_cast<char *>(ptr), size);
-    return ptr;
+    vector<unsigned char> buffer(size);
+    inputStream.read(reinterpret_cast<char *>(&buffer[0]), size);
+    return buffer;
 }
 
 //Converts image to greyscale
-unsigned char *TLDEDA001::Clusterer::ConvertToGreyScale(unsigned char *ptr, const int width, const int height)
+vector<unsigned char> TLDEDA001::Clusterer::ConvertToGreyScale(vector<unsigned char> buffer, const int width, const int height)
 {
     float r = 0.21;
     float g = 0.72;
@@ -66,35 +76,33 @@ unsigned char *TLDEDA001::Clusterer::ConvertToGreyScale(unsigned char *ptr, cons
 
     for (int i = 0; i < width * height * 3; i += 3)
     {
-        float greyscaleValue = (ptr[i] * r) + (ptr[i + 1] * g) + (ptr[i + 2] * b);
-        ptr[i] = greyscaleValue;
-        ptr[i + 1] = greyscaleValue;
-        ptr[i + 2] = greyscaleValue;
+        float greyscaleValue = (buffer[i] * r) + (buffer[i + 1] * g) + (buffer[i + 2] * b);
+        buffer[i] = greyscaleValue;
+        buffer[i + 1] = greyscaleValue;
+        buffer[i + 2] = greyscaleValue;
     }
-    return ptr;
+    return buffer;
 }
-
 
 //for testing use - depends on circumstances
 //Prints ppm image from char array data
-void TLDEDA001::Clusterer::PrintImage(ostream &outputStream, unsigned char *ptr, const int width, const int height, const int colourval)
+void TLDEDA001::Clusterer::PrintImage(ostream &outputStream, vector<unsigned char> buffer, const int width, const int height, const int colourval)
 {
-    outputStream << "P5"
+    outputStream << "P6"
                  << " "
                  << width << " "
                  << height << " "
                  << colourval << " ";
 
-    outputStream.write(reinterpret_cast<char *>(ptr), width * height);
+    outputStream.write(reinterpret_cast<char *>(&buffer[0]), width * height * 3);
 }
 
-
-//Read in images in colour
+//Read in all the images and puts them into image features.
 void TLDEDA001::Clusterer::readImages(const string &dataset)
 {
-    cout<<"Reading Images..."<<endl;
+    cout << "Reading Images..." << endl;
+
     int width, height, colourval;
-    
     //names of the images
     std::vector<std::string> filenames;
 
@@ -103,7 +111,7 @@ void TLDEDA001::Clusterer::readImages(const string &dataset)
     int count = 0;
     string avoid1 = ".";
     string avoid2 = "..";
-   
+
     while (entry)
     {
 
@@ -118,8 +126,6 @@ void TLDEDA001::Clusterer::readImages(const string &dataset)
         count++;
         entry = readdir(dirpointer);
     }
-    
-    
 
     for (int i = 0; i < filenames.size(); i++)
     {
@@ -128,40 +134,42 @@ void TLDEDA001::Clusterer::readImages(const string &dataset)
 
         string line;
 
-        getline(in, line);
+        in >> line >> ws;
 
-        if (line != "P6")
+        if (line.find("P6") == std::string::npos)
         {
+            cout << "This file is not a P6 PPM, the formatting might be incorrect!" << endl;
             break;
         }
 
-        while (line.at(0) == '#')
+        getline(in, line);
+
+        while (line[0] == '#')
         {
             getline(in, line);
         }
 
-        in >> width >> ws >> height;
-        getline(in, line);
-        in >> colourval >> ws;
+        std::istringstream is(line);
+        is >> width >> ws;
+        is >> height >> ws;
+        is >> colourval >> ws;
 
         if (inColour)
         {
-            this->AllImagesAsFeatures.push_back(new TLDEDA001::ImageFeature(filenames[i],ReadSingleImage(in, width, height),binSize,true));
-        
+            this->AllImagesAsFeatures.push_back(TLDEDA001::ImageFeature(filenames[i], ReadSingleImage(in, width, height), binSize, true));
         }
         else
         {
-             this->AllImagesAsFeatures.push_back(new TLDEDA001::ImageFeature(filenames[i],ConvertToGreyScale(ReadSingleImage(in, width, height), width, height),binSize,true));
-          
+            this->AllImagesAsFeatures.push_back(TLDEDA001::ImageFeature(filenames[i], ConvertToGreyScale(ReadSingleImage(in, width, height), width, height), binSize, false));
+
+            if (EdgeFilter)
+            {
+                AllImagesAsFeatures[i].RunThroughEdgeFilter(sobel);
+            }
         }
 
         in.close();
-        
     }
-
-    
-   
-    
 }
 
 //sets in colour
@@ -170,57 +178,46 @@ void TLDEDA001::Clusterer::setColour(const bool inColour)
     this->inColour = inColour;
 }
 
-//returns all images in dataset
-vector<TLDEDA001::ImageFeature *> TLDEDA001::Clusterer::getAllImages() const
-{
-    return this->AllImagesAsFeatures;
-}
+
 
 //returns all clusters in a vector
-vector<TLDEDA001::Cluster *> TLDEDA001::Clusterer::getAllClusters() const
+const vector<TLDEDA001::Cluster> & TLDEDA001::Clusterer::getAllClusters() const
 {
     return this->clusters;
 }
 
-//get specific cluster
-TLDEDA001::Cluster *TLDEDA001::Clusterer::getCluster(const int index) const
-{
-    return this->clusters[index];
-}
 
 //Assign Images to cluster - single iteration
-bool TLDEDA001::Clusterer::AssignImageToCluster(vector<TLDEDA001::ImageFeature *> ImagesAsFeatures)
+bool TLDEDA001::Clusterer::AssignImageToCluster(vector<TLDEDA001::ImageFeature> ImagesAsFeatures)
 {
-    bool iterationDone=true;
+    bool iterationDone = true;
     for (int i = 0; i < ImagesAsFeatures.size(); i++)
     {
         int index = 0;
-        float min = ImagesAsFeatures[i]->calculateDistance(clusters[0]->getMeanFeature());
+        float min = ImagesAsFeatures[i].calculateDistance(clusters[0].getMeanFeature());
 
-        
-        for (int j = 0; j < this->clusters.size(); j++)
+        for (int j = 1; j < this->clusters.size(); j++)
         {
 
-            if (ImagesAsFeatures[i]->calculateDistance(clusters[j]->getMeanFeature()) < min)
+            if (ImagesAsFeatures[i].calculateDistance(clusters[j].getMeanFeature()) < min)
             {
-                min = ImagesAsFeatures[i]->calculateDistance(clusters[j]->getMeanFeature());
+                min = ImagesAsFeatures[i].calculateDistance(clusters[j].getMeanFeature());
                 index = j;
             }
         }
-       
-        if (ImagesAsFeatures[i]->getClusterID()!=index)
+
+        if (ImagesAsFeatures[i].getClusterID() != index)
         {
-            iterationDone=false;
+            iterationDone = false;
         }
-        
-        ImagesAsFeatures[i]->setClusterID(index);
-        this->clusters[index]->addImage(ImagesAsFeatures[i]);
-        
+
+        ImagesAsFeatures[i].setClusterID(index);
+        this->clusters[index].addImage(ImagesAsFeatures[i]);
     }
 
     for (int i = 0; i < clusters.size(); i++)
     {
-        this->clusters[i]->calculateNewMean();
+        this->clusters[i].calculateNewMean();
     }
 
     return iterationDone;
@@ -229,8 +226,8 @@ bool TLDEDA001::Clusterer::AssignImageToCluster(vector<TLDEDA001::ImageFeature *
 //separates images into their respective clusters
 void TLDEDA001::Clusterer::ClusterImages()
 {
-    cout<<"Clustering Images..."<<endl;
-  
+
+    cout << "Clustering Images..." << endl;
 
     srand(time(0));
     vector<int> randomIndexes;
@@ -242,9 +239,14 @@ void TLDEDA001::Clusterer::ClusterImages()
 
     std::random_shuffle(randomIndexes.begin(), randomIndexes.end());
 
+    if (numOfClusters > AllImagesAsFeatures.size())
+    {
+        numOfClusters = AllImagesAsFeatures.size();
+    }
+
     for (int i = 0; i < numOfClusters; i++)
     {
-        this->clusters.push_back(new TLDEDA001::Cluster(AllImagesAsFeatures[randomIndexes[i]]));
+        this->clusters.push_back(TLDEDA001::Cluster(AllImagesAsFeatures[randomIndexes[i]]));
     }
 
     AssignImageToCluster(AllImagesAsFeatures);
@@ -255,19 +257,24 @@ void TLDEDA001::Clusterer::ClusterImages()
 
     while (!doneIteration)
     {
-      
+
         for (int i = 0; i < this->numOfClusters; i++)
         {
-            this->clusters[i]->clearAllImages();
+            this->clusters[i].clearAllImages();
         }
 
         doneIteration = AssignImageToCluster(AllImagesAsFeatures);
+        
+        if (iterationcounter>15)
+        {
+           break;
+        }
+        
         iterationcounter++;
     }
-    cout<<"Completed Clustering in "<<iterationcounter<<" iterations"<<endl;
+
+    cout << "Completed Clustering in " << iterationcounter << " iterations" << endl;
 }
-
-
 
 //operator overloaded for input into a stream in correct format
 ostream &TLDEDA001::operator<<(ostream &os, const TLDEDA001::Clusterer &clusterer)
@@ -275,90 +282,13 @@ ostream &TLDEDA001::operator<<(ostream &os, const TLDEDA001::Clusterer &clustere
     for (int i = 0; i < clusterer.numOfClusters; i++)
     {
         os << "Cluster " << i << ": ";
-        for (int j = 0; j < clusterer.getCluster(i)->getAllClusterImages().size(); j++)
+        for (int j = 0; j < clusterer.getAllClusters()[i].getAllClusterImages().size(); j++)
         {
-            os << clusterer.getCluster(i)->getImage(j)->getName() << " ";
+
+            os << clusterer.getAllClusters()[i].getImage(j).getName() << " ";
         }
         os << endl;
     }
 
     return os;
-}
-
-
-  //Run the images through a prewitt or sobel filter - image preprocessing
-void TLDEDA001::Clusterer::RunThroughEdgeFilter(const bool sobel){
-     // Prewitt matrices value
-    int GX[3][3] = 
-        {
-            {-1, 0, 1},
-            {-1, 0, 1},
-            {-1, 0, 1}};
-   
-    int GY[3][3] =
-        {
-            {-1, -1, -1},
-            {0, 0, 0},
-            {1, 1, 1}};
-
-   
-    if (sobel)
-    {
-        //Sobel matrices value
-        GX[0][0]=-1;
-        GX[0][1]=0;
-        GX[0][2]=1;
-
-        GX[1][0]=-2;
-        GX[1][1]=0;
-        GX[1][2]=2;
-
-        GX[2][0]=-1;
-        GX[2][1]=0;
-        GX[2][2]=1;
-
-
-        GY[0][0] =-1;
-        GY[0][1] =-2;
-        GY[0][2] =-1;
-
-        GY[1][0] =0;
-        GY[1][1] =0;
-        GY[1][2] =0;
-
-        GY[2][0] =1;
-        GY[2][1] =2;
-        GY[2][2] =1;
-      
-    }
-    
-    int gx, gy;
-    for (int j = 0; j < this->AllImagesAsFeatures.size(); j++)
-    {
-       
-    int width = AllImagesAsFeatures[j]->getWidth();
-    int height = AllImagesAsFeatures[j]->getHeight();
-    
-    for (int i = 0; i < width * height * 3; i +=3)
-    {
-        gx = AllImagesAsFeatures[j]->getPixels()[i] * GX[0][0] + AllImagesAsFeatures[j]->getPixels()[i + 1] * GX[0][1] + AllImagesAsFeatures[j]->getPixels()[i + 2] * GX[0][2] + AllImagesAsFeatures[j]->getPixels()[i + width * 3] * GX[1][0] + AllImagesAsFeatures[j]->getPixels()[i + width * 3 + 1] * GX[1][1] + AllImagesAsFeatures[j]->getPixels()[i + width * 3 + 2] * GX[1][2] + AllImagesAsFeatures[j]->getPixels()[i + width * 3 + width * 3] * GX[2][0] + AllImagesAsFeatures[j]->getPixels()[i + width * 3 + width * 3 + 1] * GX[2][1] + AllImagesAsFeatures[j]->getPixels()[i + width * 3 + width * 3 + 2] * GX[2][2];
-
-        gy = AllImagesAsFeatures[j]->getPixels()[i] * GY[0][0] + AllImagesAsFeatures[j]->getPixels()[i + 1] * GY[0][1] + AllImagesAsFeatures[j]->getPixels()[i + 2] * GY[0][2] + AllImagesAsFeatures[j]->getPixels()[i + width * 3] * GY[1][0] + AllImagesAsFeatures[j]->getPixels()[i + width * 3 + 1] * GY[1][1] + AllImagesAsFeatures[j]->getPixels()[i + width * 3 + 2] * GY[1][2] + AllImagesAsFeatures[j]->getPixels()[i + width * 3 + width * 3] * GY[2][0] + AllImagesAsFeatures[j]->getPixels()[i + width * 3 + width * 3 + 1] * GY[2][1] + AllImagesAsFeatures[j]->getPixels()[i + width * 3 + width * 3 + 2] * GY[2][2];
-
-           if (sqrt(pow(gx, 2) + pow(gy, 2)) > 255)
-        {
-           AllImagesAsFeatures[j]->getPixels()[i]=((unsigned char)255);
-        }
-        else if (sqrt(pow(gx, 2) + pow(gy, 2)) < 0)
-        {
-            AllImagesAsFeatures[j]->getPixels()[i]=((unsigned char)0);
-        }
-        else
-        {
-            AllImagesAsFeatures[j]->getPixels()[i]=((unsigned char)sqrt(pow(gx, 2) + pow(gy, 2)));
-        }
-    }
-    }
-    
-    
 }
